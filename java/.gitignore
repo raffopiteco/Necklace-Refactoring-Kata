@@ -1,4 +1,9 @@
 # Ignore Gradle build output directory
+.idea
+*.iml
+target
 build
-
+.project
+.classpath
+.settings
 target
