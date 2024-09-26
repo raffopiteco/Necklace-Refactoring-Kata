@@ -1,5 +1,10 @@
 package necklaceRefactoringKata;
 
+import necklaceRefactoringKata.cof.necklace.DefaultNecklacePackerHandler;
+import necklaceRefactoringKata.cof.necklace.DiamondNecklacePackerHandler;
+import necklaceRefactoringKata.cof.necklace.LightNecklacePackerHandler;
+import necklaceRefactoringKata.cof.necklace.NecklacePackerHandler;
+import necklaceRefactoringKata.cof.necklace.PendantNecklacePackerHandler;
 import necklaceRefactoringKata.jewellery.Earring;
 import necklaceRefactoringKata.jewellery.EarringType;
 import necklaceRefactoringKata.jewellery.Jewel;
@@ -9,17 +14,21 @@ import necklaceRefactoringKata.jewellery.PendantNecklace;
 
 public class Packer {
 
+    private static NecklacePackerHandler getPackingChain() {
+        var diamondHandler = new DiamondNecklacePackerHandler();
+        var lightHandler = new LightNecklacePackerHandler();
+        var pendantHandler = new PendantNecklacePackerHandler();
+        var defaultHandler = new DefaultNecklacePackerHandler();
+
+        diamondHandler.setNext(lightHandler);
+        lightHandler.setNext(pendantHandler);
+        pendantHandler.setNext(defaultHandler);
+
+        return diamondHandler;
+    }
+
     public static void packNecklace(Necklace item, JewelleryStorage storage) {
-        if (item.stone == Jewel.Diamond) {
-            storage.safe.add(item);
-        } else if (!item.isHeavy()) {
-            storage.box.topShelf.add(item);
-        } else if (item instanceof PendantNecklace pendantNecklace) {
-            storage.tree.add(pendantNecklace.chain);
-            storage.box.topShelf.add(pendantNecklace.pendant);
-        } else {
-            storage.tree.add(item);
-        }
+        getPackingChain().packIfCan(item, storage);
     }
 
     public static void pack(Jewellery item, JewelleryStorage storage) {
